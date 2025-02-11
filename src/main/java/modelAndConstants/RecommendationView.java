@@ -32,7 +32,7 @@ public class RecommendationView {
 
     public void setRecommendations(Set<Recommendation> recommendations) {
 
-        this.recommendations = recommendations;
+         this.recommendations = recommendations;
     }
 
     @Override

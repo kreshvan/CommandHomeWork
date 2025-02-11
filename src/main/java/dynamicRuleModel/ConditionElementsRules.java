@@ -22,15 +22,18 @@ public class ConditionElementsRules {
         this.query = query;
         this.arguments = arguments;
     }
-    public ConditionElementsRules(){
+
+    public ConditionElementsRules() {
     }
 
     public String getQuery() {
         return query;
     }
+
     public void setQuery(String query) {
         this.query = query;
     }
+
     public List<String> getArguments() {
         return arguments;
     }
@@ -49,7 +52,7 @@ public class ConditionElementsRules {
 
     @Override
     public boolean equals(Object o) {
-        if (this==o){
+        if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) return false;

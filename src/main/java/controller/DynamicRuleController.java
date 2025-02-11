@@ -18,7 +18,7 @@ public class DynamicRuleController {
     @PostMapping("/create")
     // id проставляется автоматически
     public DynamicRules createDynamicRule(@RequestBody DynamicRules dynamicRules) {
-        return dynamicRuleService.createDynamicRule(dynamicRules);
+        return  dynamicRuleService.createDynamicRule(dynamicRules);
     }
 
     @DeleteMapping("/delete/{id}")

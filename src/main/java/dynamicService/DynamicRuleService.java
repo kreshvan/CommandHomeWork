@@ -64,7 +64,7 @@ public class DynamicRuleService {
         }
 
 
-    }
+     }
 
     public boolean processQuery(Long userId, ConditionElementsRules conditionElementsRules) {
         switch (conditionElementsRules.getQuery()) { //switch что-то вроде if

@@ -21,7 +21,7 @@ public class GetIfExistTopSaving implements RecommendationRuleSet {
 
 
     @Override
-    public Optional<Recommendation> getRecommendation(UUID userId) {
+    public Optional<Recommendation> getRecommendation(UUID userId)  {
         boolean debitUser = recommendationsRepository.checkProductUser(userId, ProductTypeConstants.DEBIT);
 
         boolean sumTransactionByDebitMore = recommendationsRepository.getTransactionDepositSum(

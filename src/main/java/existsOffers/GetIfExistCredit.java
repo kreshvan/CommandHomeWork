@@ -19,7 +19,7 @@ public class GetIfExistCredit implements RecommendationRuleSet {
 
 
     @Override
-    public Optional<Recommendation> getRecommendation(UUID userId) {
+    public Optional<Recommendation> getRecommendation(UUID userId)  {
         boolean creditUser = recommendationsRepository.checkNotTransactionProductUser(userId, ProductTypeConstants.CREDIT);
         boolean transactionDebitUser = recommendationsRepository.getTransactionDepositSum(userId, ProductTypeConstants.DEBIT) >
                 recommendationsRepository.getTransactionWithdrawSum(userId, ProductTypeConstants.DEBIT);

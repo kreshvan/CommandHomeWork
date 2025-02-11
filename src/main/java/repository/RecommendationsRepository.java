@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public class RecommendationsRepository {
+public class  RecommendationsRepository {
     private final JdbcTemplate jdbcTemplate;
 
     //@Qualifier - указывает какой бин нужно использовать

@@ -26,7 +26,7 @@ public class RecommendationConditionElementsRulesService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public RecommendationView getRecommendation(UUID userId) {
+    public  RecommendationView getRecommendation(UUID userId) {
         return new RecommendationView(userId, recommendationRuleSets.stream()
                 .flatMap(r -> r.getRecommendation(userId).stream())
                 //flatMap отсеивает Null

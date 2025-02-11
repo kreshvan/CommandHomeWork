@@ -1,6 +1,6 @@
 package modelAndConstants;
 
-public class Info {
+public class  Info {
     private String name;
     private String id;
     private String string;

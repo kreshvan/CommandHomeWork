@@ -27,9 +27,10 @@ public class RecommendationsDataSourceConfiguration {
     ) {
         return new JdbcTemplate(dataSource);
     }
+
     @Bean
     @Primary
-    public DataSource secondDataSource(@Qualifier("secondDataSourceProperties")DataSourceProperties secondDataSourceProperties){
+    public DataSource secondDataSource(@Qualifier("secondDataSourceProperties") DataSourceProperties secondDataSourceProperties) {
         return secondDataSourceProperties.initializeDataSourceBuilder().build();
     }
     // secondDataSource - метод который создает бин.
