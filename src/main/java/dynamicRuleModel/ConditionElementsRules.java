@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class ConditionElementsRules {
+public class  ConditionElementsRules {
 
     @Id
     @GeneratedValue
@@ -27,10 +27,12 @@ public class ConditionElementsRules {
     }
 
     public String getQuery() {
+
         return query;
     }
 
     public void setQuery(String query) {
+
         this.query = query;
     }
 
@@ -39,6 +41,7 @@ public class ConditionElementsRules {
     }
 
     public void setArguments(List<String> arguments) {
+
         this.arguments = arguments;
     }
 
@@ -47,8 +50,10 @@ public class ConditionElementsRules {
     }
 
     public void setNegate(boolean negate) {
+
         this.negate = negate;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -3,7 +3,7 @@ package modelAndConstants;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Recommendation {
+public class  Recommendation {
     private String name;
     private UUID id;
     private String text;

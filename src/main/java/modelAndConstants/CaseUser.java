@@ -1,5 +1,5 @@
 package modelAndConstants;
 
-public enum CaseUser {
+public enum CaseUser  {
      USER_OF
 }

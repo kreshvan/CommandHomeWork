@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-public class RecommendationsDataSourceConfiguration {
+public class RecommendationsDataSourceConfiguration  {
     @Bean(name = "recommendationsDataSource")
     public DataSource recommendationsDataSource(@Value("${application.recommendations-db.url}") String recommendationsUrl) {
         var dataSource = new HikariDataSource();//  управление соединениями соединение с БД и

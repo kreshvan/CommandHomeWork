@@ -22,7 +22,7 @@ public class GetIfExistInvest500 implements RecommendationRuleSet {
     }
 
     @Override
-    public Optional<Recommendation> getRecommendation(UUID userId)  {
+    public Optional<Recommendation> getRecommendation(UUID userId)   {
         boolean debitUser = recommendationsRepository.checkTransactionProductUser(userId, ProductTypeConstants.DEBIT);
         boolean notInvestUser = recommendationsRepository.checkNotTransactionProductUser(userId, ProductTypeConstants.INVEST);
         boolean sumReplenishMore1000 = recommendationsRepository.getTransactionDepositSum(

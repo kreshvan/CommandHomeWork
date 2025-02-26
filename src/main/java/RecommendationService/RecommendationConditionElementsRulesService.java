@@ -1,6 +1,7 @@
 package RecommendationService;
 
 import dynamicService.DynamicRuleService;
+import modelAndConstants.Recommendation;
 import modelAndConstants.RecommendationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,7 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class RecommendationConditionElementsRulesService {
+public class RecommendationConditionElementsRulesService  {
     private final List<RecommendationRuleSet> recommendationRuleSets;
     private final DynamicRuleService dynamicRuleService;
     private final DynamicRulesRepository dynamicRulesRepository;
@@ -26,24 +27,22 @@ public class RecommendationConditionElementsRulesService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public  RecommendationView getRecommendation(UUID userId) {
-        return new RecommendationView(userId, recommendationRuleSets.stream()
+    public RecommendationView getRecommendation(UUID userId) {
+
+        RecommendationView recommendationView = new RecommendationView(userId, recommendationRuleSets.stream()
                 .flatMap(r -> r.getRecommendation(userId).stream())
                 //flatMap отсеивает Null
                 .collect(Collectors.toSet()));
         //Collectors.toSet собирает все рекомендации в множество исключив повторение
+
+
+        List<Recommendation> recommendationByDynamicRules = dynamicRuleService.getRecommendationsByDynamicRules(userId);
+        recommendationView.addRecommendations(recommendationByDynamicRules);
+        return recommendationView;
     }
 
 
 }
-
-
-
-
-
-
-
-
 
 
 // пройти по тому как устроена

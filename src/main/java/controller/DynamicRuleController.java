@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rule")
-public class DynamicRuleController {
+public class  DynamicRuleController {
     private final DynamicRuleService dynamicRuleService;
 
     public DynamicRuleController(DynamicRuleService dynamicRuleService) {

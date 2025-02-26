@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-public class RecommendationsCommandsController {
+public class RecommendationsCommandsController  {
     private RecommendationConditionElementsRulesService recommendationService;
 
     public RecommendationsCommandsController(RecommendationConditionElementsRulesService recommendationService) {

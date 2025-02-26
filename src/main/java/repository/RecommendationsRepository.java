@@ -24,7 +24,7 @@ public class  RecommendationsRepository {
         return result != null ? result : 0;
     }
 
-    public boolean checkTransactionProductUser(UUID userID, ProductTypeConstants productTypeConstants) {
+    public boolean  checkTransactionProductUser(UUID userID, ProductTypeConstants productTypeConstants) {
         return jdbcTemplate.queryForObject(
                 "select exists(select 1 from TRANSACTIONS t join PRODUCT p on t.PRODUCT_ID = p.ID" +
                         "where t. USER_ID = ? and p.type = ?)",

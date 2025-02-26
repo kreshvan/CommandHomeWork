@@ -27,7 +27,7 @@ public class GetIfExistCredit implements RecommendationRuleSet {
                 userId, ProductTypeConstants.DEBIT) > 100000;
 
         if (creditUser && transactionDebitUser && sumBayDebitUser) {
-            return Optional.of(new Recommendation(CREDIT_NAME.getValue(),
+            return Optional.of(new  Recommendation(CREDIT_NAME.getValue(),
                     UUID.fromString(CREDIT_ID.getValue()),
                     CREDIT_TEXT.getValue()));
         }

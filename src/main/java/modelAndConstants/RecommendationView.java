@@ -1,8 +1,6 @@
 package modelAndConstants;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class RecommendationView {
     private UUID userId;
@@ -12,6 +10,7 @@ public class RecommendationView {
         this.userId = userId;
         this.recommendations = recommendations;
     }
+
 
     public RecommendationView() {
     }
@@ -32,7 +31,11 @@ public class RecommendationView {
 
     public void setRecommendations(Set<Recommendation> recommendations) {
 
-         this.recommendations = recommendations;
+        this.recommendations = recommendations;
+    }
+
+    public void addRecommendations(Collection<Recommendation> recommendation) {
+        recommendations.addAll(recommendation);
     }
 
     @Override

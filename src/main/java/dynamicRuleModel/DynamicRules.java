@@ -2,13 +2,14 @@ package dynamicRuleModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import modelAndConstants.Recommendation;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-public class DynamicRules {
+public class DynamicRules  {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)//автоматической генерации значения идентификатора
@@ -36,7 +37,13 @@ public class DynamicRules {
         this.conditions = conditions;
     }
 
+    public Recommendation extractRecommendation(){
+        return new Recommendation( productName,productId, productText);
+    }
+
+
     public List<ConditionElementsRules> getConditions() {
+
         return conditions;
     }
 

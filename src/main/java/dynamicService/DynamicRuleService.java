@@ -2,12 +2,13 @@ package dynamicService;
 
 import dynamicRuleModel.ConditionElementsRules;
 import dynamicRuleModel.DynamicRules;
-import modelAndConstants.Info;
+import modelAndConstants.ProductTypeConstants;
 import modelAndConstants.Recommendation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import repository.DynamicRulesRepository;
+import repository.RecommendationsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,11 @@ import java.util.UUID;
 public class DynamicRuleService {
     private final Logger logger = LoggerFactory.getLogger(DynamicRules.class);// ошибки в работе приложения (УТОЧНИТЬ)
     private final DynamicRulesRepository dynamicRulesRepository;
+    private final RecommendationsRepository recommendationsRepository;
 
-
-    public DynamicRuleService(DynamicRulesRepository dynamicRulesRepository) {
+    public DynamicRuleService(DynamicRulesRepository dynamicRulesRepository, RecommendationsRepository recommendationsRepository) {
         this.dynamicRulesRepository = dynamicRulesRepository;
+        this.recommendationsRepository = recommendationsRepository;
     }
 
     public DynamicRules createDynamicRule(DynamicRules dynamicRules) {
@@ -40,55 +42,117 @@ public class DynamicRuleService {
         return dynamicRulesRepository.findAll();
     }
 
-    public List<Recommendation> getRecommendationByDynamicRules(UUID userId) {
+
+    public List<Recommendation> getRecommendationsByDynamicRules(UUID userId) {
         List<DynamicRules> allDynamicRules = dynamicRulesRepository.findAll();
-        List<Info> newInfo = new ArrayList<>();
+        List<Recommendation> result = new ArrayList<>();
         for (DynamicRules dynamicRules : allDynamicRules) {
-            boolean dynamicRuleResult =
+            if (checkDynamicRulesSuitable(userId, dynamicRules)) {
+                Recommendation recommendation = dynamicRules.extractRecommendation();
+                result.add(recommendation);
+            }
         }
-
-
+        return result;
     }
 
-
-    public boolean isDynamicRulesSuitable(DynamicRules dynamicRule, Long id) {
+    //processQuery - обрабатывать запрос
+    public boolean checkDynamicRulesSuitable(UUID id, DynamicRules dynamicRule) {
         for (ConditionElementsRules conditionElementsRule : dynamicRule.getConditions()) {
-            boolean conditionElementsRuleResult =
+            boolean conditionElementsRuleResult = processQuery(id, conditionElementsRule);
 
-            return true;
-            //метод должен определять подходит или нет дин правило. (рекомендация)
+            if (conditionElementsRule.isNegate() == true) {//todo
+                conditionElementsRuleResult = !conditionElementsRuleResult;
 
-            //если все условия выполня то  тру
+            }
+            if (conditionElementsRuleResult == false) {
+                return false;
+            }
 
-            //пройтись по всем condition
         }
+        return true;
+        //метод должен определять подходит или нет дин правило. (рекомендация)
+        //если все условия выполня то  тру
+        //пройтись по всем condition
+    }
 
-
-     }
-
-    public boolean processQuery(Long userId, ConditionElementsRules conditionElementsRules) {
+    public boolean processQuery(UUID userId, ConditionElementsRules conditionElementsRules) {
         switch (conditionElementsRules.getQuery()) { //switch что-то вроде if
             case "USER_OF":
                 return evaluateUserOf(userId, conditionElementsRules);
             case "ACTIVE_USER_OF":
-                return evvaluateActiveUserOf(userId, conditionElementsRules);
+                return evaluateActiveUserOf(userId, conditionElementsRules);
             case "TRANSACTION_SUM_COMPARE":
-                return evvaluateTransactionSumCompare(userId, conditionElementsRules);
+                return evaluateTransactionSumCompare(userId, conditionElementsRules);
             case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW":
-                return evvaluateTransactionSumCompareDepositWithdraw(userId, conditionElementsRules);
-
+             return evaluateTransactionSumCompareDepositWithdraw(userId, conditionElementsRules);
+            default:throw new RuntimeException(); //todo
         }
     }
 
 
-    public boolean evaluateUserOf(Long userId, ConditionElementsRules conditionElementsRules) {
-        String productTape = conditionElementsRules.getArguments()[0];
+    public boolean evaluateUserOf(UUID userId, ConditionElementsRules conditionElementsRules) {
+        List<String> productTape = conditionElementsRules.getArguments();
+        ProductTypeConstants productTypeConstants = ProductTypeConstants.valueOf(productTape.get(0));
+        boolean result = recommendationsRepository.checkTransactionProductUser(userId, productTypeConstants);
+        return conditionElementsRules.isNegate() ? !result : result;// вставить в каждый ретурн
 
     }
 
+    public boolean evaluateActiveUserOf(UUID userId, ConditionElementsRules conditionElementsRules) {
+        List<String> productTape = conditionElementsRules.getArguments();
+        ProductTypeConstants productTypeConstants = ProductTypeConstants.valueOf(productTape.get(0));
+        boolean result = recommendationsRepository.checkTransactionProductUser(userId, productTypeConstants);
+        return conditionElementsRules.isNegate() ? !result : result;
+
+    }
+
+    public boolean evaluateTransactionSumCompare(UUID userId, ConditionElementsRules conditionElementsRules) {
+        List<String> productTape = conditionElementsRules.getArguments();
+        String operator = productTape.get(1);
+        ProductTypeConstants productTypeConstantOneArgument = ProductTypeConstants.valueOf(productTape.get(0));
+        ProductTypeConstants productTypeConstantsTwoArgument = ProductTypeConstants.valueOf("DEPOSIT");
+
+        // boolean resultOneProductTypeConstants = recommendationsRepository.checkTransactionProductUser(userId, productTypeConstants);
+        int sumProductTypeConstants = recommendationsRepository.getTransactionDepositSum(userId, productTypeConstantOneArgument);
+        // boolean resultTwoProductTypeConstants = recommendationsRepository.checkTransactionProductUser(userId, productTypeConstants);
+        int sumProductTypeConstantsTwoArguments = recommendationsRepository.getTransactionDepositSum(userId, productTypeConstantsTwoArgument);
+        boolean result = compareSum(sumProductTypeConstants, sumProductTypeConstantsTwoArguments, operator);
+        return conditionElementsRules.isNegate() ? !result : result;
+
+    }
+
+    public boolean evaluateTransactionSumCompareDepositWithdraw(UUID userId, ConditionElementsRules conditionElementsRules) {
+        List<String> productTape = conditionElementsRules.getArguments();
+        String productType = productTape.get(0);
+        String operator = productTape.get(1);
+        ProductTypeConstants productTypeConstant = ProductTypeConstants.valueOf(productType);
+
+        int sumDeposit = recommendationsRepository.getTransactionDepositSum(userId, productTypeConstant);
+        int sumWithdraw = recommendationsRepository.getTransactionWithdrawSum(userId, productTypeConstant);
+
+        boolean result = compareSum(sumWithdraw, sumDeposit, operator);
+
+//todo
+
+        return conditionElementsRules.isNegate() ? !result : result;
+    }
+
+    private boolean compareSum(int sum1, int sum2, String operator) {
+        switch (operator) {
+            case ">":
+                return sum1 > sum2;
+            case "<":
+                return sum1 < sum2;
+            case "=":
+                return sum1 == sum2;
+            case ">=":
+                return sum1 >= sum2;
+            case "<=":
+                return sum1 <= sum2;
+
+            default: throw new IllegalArgumentException("Invalid operator" + operator);
+        }
+
+
+    }
 }
-
-
-
-
-

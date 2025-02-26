@@ -1,6 +1,6 @@
 package modelAndConstants;
 
-public enum ProductTypeConstants {
+public enum  ProductTypeConstants {
     DEBIT,
     SAVING,
     INVEST,
