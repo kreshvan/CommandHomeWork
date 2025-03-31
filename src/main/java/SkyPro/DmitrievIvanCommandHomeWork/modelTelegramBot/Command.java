@@ -2,7 +2,10 @@ package SkyPro.DmitrievIvanCommandHomeWork.modelTelegramBot;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.IdGeneratorType;
 
 
 import java.util.Objects;
@@ -10,6 +13,7 @@ import java.util.Objects;
 @Entity
 public class Command {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String command;
     private String textCommand;

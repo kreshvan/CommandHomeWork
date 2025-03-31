@@ -3,15 +3,18 @@ package SkyPro.DmitrievIvanCommandHomeWork.dynamicService;
 import SkyPro.DmitrievIvanCommandHomeWork.dynamicRuleModel.ConditionElementsRules;
 import SkyPro.DmitrievIvanCommandHomeWork.dynamicRuleModel.DynamicRules;
 import SkyPro.DmitrievIvanCommandHomeWork.dynamicRuleModel.RuleStats;
+import SkyPro.DmitrievIvanCommandHomeWork.modelAndConstants.ProductTypeConstants;
 import SkyPro.DmitrievIvanCommandHomeWork.modelAndConstants.Recommendation;
 import SkyPro.DmitrievIvanCommandHomeWork.repository.DynamicRulesRepository;
 import SkyPro.DmitrievIvanCommandHomeWork.repository.RecommendationsRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
@@ -27,12 +30,16 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 class DynamicRuleServiceTest {
     @Mock
     private DynamicRulesRepository dynamicRulesRepository;
-    @InjectMocks
+
+    @Mock
     private RecommendationsRepository recommendationsRepository;
+
     private Recommendation recommendation;
     private DynamicRules dynamicRules;
-    private DynamicRuleService dynamicRuleService;
 
+
+    @InjectMocks
+    private DynamicRuleService dynamicRuleService;
 
     @BeforeEach
     void setUpMockito() {
@@ -130,11 +137,64 @@ class DynamicRuleServiceTest {
 
     @Test
     void checkDynamicRulesSuitable() {
+        UUID id = UUID.fromString("d884bc3e-01d7-4023-8d4e-dfab92a8404e");
+                //UUID.randomUUID();
 
+        List<ConditionElementsRules> condition = getConditionElementsRules();
+
+        DynamicRules dynamicRule = new DynamicRules();
+        dynamicRule.setId(2L);
+        dynamicRule.setProductName("2");
+        dynamicRule.setProductText("2");
+        dynamicRule.setProductId(UUID.randomUUID());
+        dynamicRule.setConditions(condition);
+
+        doReturn(true)
+                .when(recommendationsRepository)
+                .checkTransactionProductUser(any(UUID.class), any(ProductTypeConstants.class));
+
+        boolean result = dynamicRuleService.processQuery(id, condition.get(0));
+
+        assertTrue(result);
+
+    }
+
+    @NotNull
+    private static List<ConditionElementsRules> getConditionElementsRules() {
+        ConditionElementsRules conditionElementsRule = new ConditionElementsRules();
+        List<String> list = new ArrayList<>();
+        list.add("DEBIT");
+        list.add(">=");
+        conditionElementsRule.setArguments(list);
+        conditionElementsRule.setQuery("USER_OF");
+        conditionElementsRule.setNegate(true);
+
+        ConditionElementsRules conditionElementsRule1 = new ConditionElementsRules();
+        List<String> list1 = new ArrayList<>();
+        list.add("T");
+        conditionElementsRule1.setArguments(list1);
+        conditionElementsRule1.setQuery("T");
+        conditionElementsRule1.setNegate(true);
+
+        List<ConditionElementsRules> condition = new ArrayList<>();
+        condition.add(conditionElementsRule);
+        condition.add(conditionElementsRule1);
+        return condition;
     }
 
     @Test
     void processQuery() {
+        UUID id = UUID.randomUUID();
+        ConditionElementsRules conditionElementsRules = mock(ConditionElementsRules.class);
+        String user = "user";
+
+        when(conditionElementsRules.getQuery()).thenReturn("USER_OF");
+        when(dynamicRuleService.evaluateUserOf(id, conditionElementsRules)).thenReturn(true);
+
+        //мне нужно добавить в conditionElementsRules query чтобы потом вытащить
+        boolean result = dynamicRuleService.processQuery(id, conditionElementsRules);
+        assertTrue(result);
+
     }
 
     @Test

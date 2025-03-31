@@ -10,18 +10,19 @@ import java.util.UUID;
 
 @Entity
 public class DynamicRules {
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)//автоматической генерации значения идентификатора
-    // при сохранении объекта в базу данных.
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String productName;
     private String productText;
     private UUID productId;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "dynamic_rule_id")
+    private List<ConditionElementsRules> conditions;
+    @Version
+    private Long version;
 
     public DynamicRules(String productText, String productName, UUID productId, List<ConditionElementsRules> conditions) {
         this.productText = productText;
@@ -30,33 +31,17 @@ public class DynamicRules {
         this.conditions = conditions;
     }
 
-    public DynamicRules(Long id, String productName, String productText, UUID productId, List<ConditionElementsRules> conditions) {
-        this.id = id;
-        this.productName = productName;
-        this.productText = productText;
-        this.productId = productId;
-        this.conditions = conditions;
-    }
-
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-
-    @JoinColumn(name = "dynamic_rule_id")
-    private List<ConditionElementsRules> conditions;
-    @Version
-    private Long version;
-
 
     public DynamicRules() {
 
     }
 
-
-    public Long getId() {
-        return id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long setId() {
+    public Long getId() {
+
         return id;
     }
 

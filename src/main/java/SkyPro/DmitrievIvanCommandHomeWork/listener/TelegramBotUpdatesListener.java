@@ -31,8 +31,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private CommandRepository commandRepository;
     @Autowired
     private DynamicRuleService dynamicRuleService;
-    @Autowired
-    private RecommendationsRepository recommendationsRepository;
+
+    private final RecommendationsRepository recommendationsRepository;
+
+    public TelegramBotUpdatesListener(RecommendationsRepository recommendationsRepository) {
+        this.recommendationsRepository = recommendationsRepository;
+    }
 
     @PostConstruct
     public void init() {
@@ -45,23 +49,22 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Update update = updates.get(i);
             String textUpdate = update.message().text();
             Long chatId = update.message().chat().id();
-            //String nameUser = update.message().forwardSenderName();//todo
-           // String commandInChat = "Добрый вечер! /recommend username";//commandRepository .findTextByCommand(textUpdate);
 
-            if (textUpdate.startsWith("/recommend" ))  {
+            if (textUpdate != null && textUpdate.startsWith("/recommend") && textUpdate.length() > 11) {
                 String userNameInChat = textUpdate.substring(11).trim();
-                String userId = recommendationsRepository.findUserIdByUserName(userNameInChat).orElseThrow();
-                //
+                String userId = recommendationsRepository.findUserIdByUserName(userNameInChat)
+                        .orElseThrow(() -> new EnteredIncorrectlyException("Неверно введены данные, либо равны null"));
+
                 UUID userUuid = UUID.fromString(userId);
                 List<Recommendation> recommendationsByUserId = dynamicRuleService.getRecommendationsByUserId(userUuid);
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("Новые продукты для вас:");
                 recommendationsByUserId.forEach(r -> stringBuilder.append(r.toTelegramString()));
-                SendMessage sendMessage = new SendMessage(chatId,stringBuilder.toString());
+                SendMessage sendMessage = new SendMessage(chatId, stringBuilder.toString());
                 telegramBot.execute(sendMessage);
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
+
             }
-//убрать Optional
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }

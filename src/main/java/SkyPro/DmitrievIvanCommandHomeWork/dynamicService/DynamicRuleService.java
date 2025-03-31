@@ -62,11 +62,11 @@ public class DynamicRuleService {
         for (ConditionElementsRules conditionElementsRule : dynamicRule.getConditions()) {
             boolean conditionElementsRuleResult = processQuery(id, conditionElementsRule);
 
-            if (conditionElementsRule.isNegate() == true) {//todo
+            if (conditionElementsRule.isNegate()) {
                 conditionElementsRuleResult = !conditionElementsRuleResult;
 
             }
-            if (conditionElementsRuleResult == false) {
+            if (!conditionElementsRuleResult) {
                 return false;
             }
 
@@ -76,7 +76,8 @@ public class DynamicRuleService {
     }
 
     public boolean processQuery(UUID userId, ConditionElementsRules conditionElementsRules) {
-        switch (conditionElementsRules.getQuery()) { //switch что-то вроде if
+        System.out.println(userId.toString() + " - " + conditionElementsRules.getQuery());
+        switch (conditionElementsRules.getQuery()) {
             case "USER_OF":
                 return evaluateUserOf(userId, conditionElementsRules);
             case "ACTIVE_USER_OF":
@@ -86,7 +87,7 @@ public class DynamicRuleService {
             case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW":
                 return evaluateTransactionSumCompareDepositWithdraw(userId, conditionElementsRules);
             default:
-                throw new RuntimeException(); //todo
+                throw new ConditionElementsRuleNotFoundException("Условия элементы правила не найдены!");
         }
     }
 
@@ -95,7 +96,7 @@ public class DynamicRuleService {
         List<String> productTape = conditionElementsRules.getArguments();
         ProductTypeConstants productTypeConstants = ProductTypeConstants.valueOf(productTape.get(0));
         boolean result = recommendationsRepository.checkTransactionProductUser(userId, productTypeConstants);
-        return conditionElementsRules.isNegate() ? !result : result;// вставить в каждый ретурн
+        return conditionElementsRules.isNegate() ? !result : result;//
 
     }
 
@@ -133,7 +134,7 @@ public class DynamicRuleService {
 
         boolean result = compareSum(sumWithdraw, sumDeposit, operator);
 
-//todo
+
 
         return conditionElementsRules.isNegate() ? !result : result;
     }

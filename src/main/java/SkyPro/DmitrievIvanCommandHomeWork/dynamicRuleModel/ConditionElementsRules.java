@@ -11,8 +11,8 @@ import java.util.Objects;
 public class ConditionElementsRules {
     @Id
     @GeneratedValue
-    private Long id;//не финал так как меняется
-    private String query;//запрос
+    private Long id;
+    private String query;
     private List<String> arguments;
     private boolean negate;
 

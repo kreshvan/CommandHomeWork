@@ -16,7 +16,6 @@ public class RecommendationConditionElementsRulesService {
     private final DynamicRuleService dynamicRuleService;
 
 
-    @Autowired
     public RecommendationConditionElementsRulesService(List<RecommendationRuleSet> recommendationRuleSets, DynamicRuleService dynamicRuleService) {
         this.recommendationRuleSets = recommendationRuleSets;
         this.dynamicRuleService = dynamicRuleService;
@@ -27,7 +26,6 @@ public class RecommendationConditionElementsRulesService {
 
         RecommendationView recommendationView = new RecommendationView(userId, recommendationRuleSets.stream()
                 .flatMap(r -> r.getRecommendation(userId).stream())
-                //flatMap отсеивает Null
                 .collect(Collectors.toSet()));
 
 
@@ -40,4 +38,3 @@ public class RecommendationConditionElementsRulesService {
 }
 
 
-// пройти по тому как устроена
